@@ -7,6 +7,12 @@ resolution-markers = [
     "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
+[manifest]
+members = [
+    "app",
+    "project",
+]
+
 [[package]]
 name = "ag-ui-protocol"
 version = "0.1.14"
@@ -135,6 +141,27 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/96/f0/5eb65b2bb0d09ac6776f2eb54adee6abe8228ea05b20a5ad0e4945de8aac/anyio-4.12.1.tar.gz", hash = "sha256:41cfcc3a4c85d3f05c932da7c26d0201ac36f72abd4435ba90d0464a3ffed703", size = 228685, upload-time = "2026-01-06T11:45:21.246Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/0e/27be9fdef66e72d64c0cdc3cc2823101b80585f8119b5c112c2e8f5f7dab/anyio-4.12.1-py3-none-any.whl", hash = "sha256:d405828884fc140aa80a3c667b8beed277f1dfedec42ba031bd6ac3db606ab6c", size = 113592, upload-time = "2026-01-06T11:45:19.497Z" },
+]
+
+[[package]]
+name = "app"
+version = "0.1.0"
+source = { virtual = "app" }
+dependencies = [
+    { name = "minsearch" },
+    { name = "pydantic-ai" },
+    { name = "python-frontmatter" },
+    { name = "requests" },
+    { name = "sentence-transformers" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "minsearch", specifier = ">=0.0.10" },
+    { name = "pydantic-ai", specifier = ">=1.73.0" },
+    { name = "python-frontmatter", specifier = ">=1.1.0" },
+    { name = "requests", specifier = ">=2.32.5" },
+    { name = "sentence-transformers", specifier = ">=5.3.0" },
 ]
 
 [[package]]

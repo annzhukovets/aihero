@@ -17,3 +17,8 @@ dependencies = [
 dev = [
     "jupyter>=1.1.1",
 ]
+
+[tool.uv.workspace]
+members = [
+    "app",
+]

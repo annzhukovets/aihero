@@ -40,6 +40,17 @@ Always call the search tools to find relevant sections before answering. If the 
 
 Mention source filenames when it helps the user locate content. If the retrieved sections do not answer the question, say so clearly."""
 
+SYSTEM_PROMPT_STRICT_CITATIONS = """You are a helpful assistant answering questions using retrieved sections from Hugging Face Transformers documentation.
+
+If you can find specific information through search, use it to provide accurate answers.
+
+Always include references by citing the filename of the source material you used.  
+When citing the reference, replace "transformers-main" by the full path to the GitHub repository: "https://github.com/huggingface/transformers/tree/main/"
+Format: [LINK TITLE](FULL_GITHUB_LINK)
+
+If the search doesn't return relevant results, let the user know and provide general guidance
+"""
+
 
 def _json_safe(obj: Any) -> Any:
     """
@@ -144,7 +155,7 @@ def create_repo_agent(
 
     return Agent(
         name=name,
-        instructions=instructions or DEFAULT_REPO_INSTRUCTIONS,
+        instructions=instructions or SYSTEM_PROMPT_STRICT_CITATIONS,
         tools=tools,
         model=llm_model,
     )
