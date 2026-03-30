@@ -615,6 +615,7 @@ numpy==2.4.3 \
     #   scipy
     #   sentence-transformers
     #   streamlit
+    #   torchvision
     #   transformers
 nvidia-cublas==13.1.0.3 ; sys_platform == 'linux' \
     --hash=sha256:c86fc7f7ae36d7528288c5d88098edcb7b02c633d262e7ddbb86b0ad91be5df2 \
@@ -788,7 +789,9 @@ pillow==12.1.1 \
     --hash=sha256:aee2810642b2898bb187ced9b349e95d2a7272930796e022efaf12e99dccd293 \
     --hash=sha256:af9a332e572978f0218686636610555ae3defd1633597be015ed50289a03c523 \
     --hash=sha256:bb66b7cc26f50977108790e2456b7921e773f23db5630261102233eb355a3b79
-    # via streamlit
+    # via
+    #   streamlit
+    #   torchvision
 platformdirs==4.9.4 \
     --hash=sha256:1ec356301b7dc906d83f371c8f487070e99d3ccf9e501686456394622a01a934 \
     --hash=sha256:68a9a4619a666ea6439f2ff250c12a853cd1cbd5158d258bd824a7df6be2f868
@@ -1234,7 +1237,15 @@ torch==2.11.0 \
     --hash=sha256:4b5866312ee6e52ea625cd211dcb97d6a2cdc1131a5f15cc0d87eec948f6dd34 \
     --hash=sha256:f99924682ef0aa6a4ab3b1b76f40dc6e273fca09f367d15a524266db100a723f \
     --hash=sha256:fbf39280699d1b869f55eac536deceaa1b60bd6788ba74f399cc67e60a5fab10
-    # via sentence-transformers
+    # via
+    #   sentence-transformers
+    #   torchvision
+torchvision==0.26.0 \
+    --hash=sha256:406557718e62fdf10f5706e88d8a5ec000f872da913bf629aab9297622585547 \
+    --hash=sha256:7993c01648e7c61d191b018e84d38fe0825c8fcb2720cd0f37caf7ba14404aa1 \
+    --hash=sha256:c409e1c3fdebec7a3834465086dbda8bf7680eff79abf7fd2f10c6b59520a7a4 \
+    --hash=sha256:d61a5abb6b42a0c0c311996c2ac4b83a94418a97182c83b055a2a4ae985e05aa
+    # via app
 tornado==6.5.5 \
     --hash=sha256:192b8f3ea91bd7f1f50c06955416ed76c6b72f96779b962f07f911b91e8d30e9 \
     --hash=sha256:2c9a876e094109333f888539ddb2de4361743e5d21eece20688e3e351e4990a6 \
