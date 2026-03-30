@@ -191,6 +191,7 @@ cython_debug/
 # OS / editor noise
 .DS_Store
 Thumbs.db
+.devcontainer/
 
 # Local agent eval artifacts (may contain API content)
 logs/
