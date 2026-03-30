@@ -25,7 +25,7 @@ def init_agent():
 
 
 st.set_page_config(
-    page_title="Transformers docs assistant",
+    page_title="Transformers Docs Assistant",
     page_icon="🤗",
     layout="centered",
 )
