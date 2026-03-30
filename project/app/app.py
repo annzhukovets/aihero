@@ -3,6 +3,8 @@ Streamlit UI: Transformers documentation assistant (streaming replies).
 """
 from __future__ import annotations
 
+import os
+
 import streamlit as st
 
 import ingest
@@ -15,6 +17,10 @@ def init_agent():
         "huggingface",
         "transformers",
         folder_filter="docs/source/en",
+        artifacts_repo_id=os.getenv("HF_ARTIFACTS_REPO_ID"),
+        artifacts_revision=os.getenv("HF_ARTIFACTS_REVISION"),
+        artifacts_subdir=os.getenv("HF_ARTIFACTS_SUBDIR", ""),
+        artifacts_repo_type=os.getenv("HF_ARTIFACTS_REPO_TYPE", "dataset"),
     )
     return search_agent.init_agent(
         vindex,

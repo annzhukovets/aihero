@@ -164,6 +164,7 @@ name = "app"
 version = "0.1.0"
 source = { virtual = "app" }
 dependencies = [
+    { name = "huggingface-hub" },
     { name = "minsearch" },
     { name = "pydantic-ai" },
     { name = "python-frontmatter" },
@@ -180,6 +181,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "huggingface-hub", specifier = ">=0.36.0" },
     { name = "minsearch", specifier = ">=0.0.10" },
     { name = "pydantic-ai", specifier = ">=1.73.0" },
     { name = "python-frontmatter", specifier = ">=1.1.0" },

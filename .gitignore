@@ -195,6 +195,7 @@ Thumbs.db
 # Local agent eval artifacts (may contain API content)
 logs/
 eval_logs/
+artifacts/
 
 # Ruff stuff:
 .ruff_cache/

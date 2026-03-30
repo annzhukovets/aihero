@@ -12,6 +12,7 @@ For the web UI::
 from __future__ import annotations
 
 import asyncio
+import os
 
 import ingest
 import logs
@@ -25,6 +26,10 @@ def main() -> None:
         "huggingface",
         "transformers",
         folder_filter="docs/source/en",
+        artifacts_repo_id=os.getenv("HF_ARTIFACTS_REPO_ID"),
+        artifacts_revision=os.getenv("HF_ARTIFACTS_REVISION"),
+        artifacts_subdir=os.getenv("HF_ARTIFACTS_SUBDIR", ""),
+        artifacts_repo_type=os.getenv("HF_ARTIFACTS_REPO_TYPE", "dataset"),
     )
     print("Vector index ready.")
 

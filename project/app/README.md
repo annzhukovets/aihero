@@ -143,6 +143,8 @@ Improvements: Our evaluation is currently based on only 10 questions. We need to
 
 `logs.py`: Logs each interaction into JSON files under `logs/` (configurable via `LOGS_DIRECTORY`).
 
+`push_data_to_hf.py`: Builds retrieval artifacts (`artifacts/docs.jsonl`, `artifacts/embeddings.npy`) and uploads them to a Hugging Face dataset repo.
+
 ---
 
 ## Tests
@@ -168,7 +170,27 @@ To deploy the Streamlit app on Streamlit Cloud:
    ```
 
 2. Make sure `OPENAI_API_KEY` is configured in the Streamlit Cloud settings.
-3. Run:
+3. (Optional) Use prebuilt artifacts from Hugging Face Hub instead of recomputing embeddings on startup.
+
+   Build and upload artifacts with:
+
+   ```bash
+   cd project/app
+   uv run python push_data_to_hf.py
+   ```
+
+   Then add these Secrets:
+
+   ```toml
+   HF_ARTIFACTS_REPO_ID = "your-username/transformers-docs-index"
+   HF_ARTIFACTS_REPO_TYPE = "dataset"
+   HF_ARTIFACTS_REVISION = "main"
+   HF_ARTIFACTS_SUBDIR = ""
+   ```
+
+   Add `HF_TOKEN` only if the dataset is private.
+
+4. Run:
 
    ```bash
    uv run streamlit run app.py

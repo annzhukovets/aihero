@@ -6,12 +6,16 @@ Chunks are markdown sections split on headings (see :func:`split_markdown_by_lev
 from __future__ import annotations
 
 import io
+import json
+import os
 import re
+import tempfile
 import zipfile
 
 import frontmatter
 import numpy as np
 import requests
+from huggingface_hub import hf_hub_download
 from minsearch import VectorSearch
 from sentence_transformers import SentenceTransformer
 
@@ -110,6 +114,75 @@ def chunk_documents(docs, level=2):
     return chunks
 
 
+def _fit_vector_index(docs, embeddings):
+    vindex = VectorSearch()
+    vindex.fit(embeddings, docs)
+    return vindex
+
+
+def save_artifacts(docs, embeddings, output_dir):
+    """
+    Save retrieval artifacts to disk:
+    - docs.jsonl: one JSON record per line
+    - embeddings.npy: numpy matrix with one row per docs record
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    docs_path = os.path.join(output_dir, "docs.jsonl")
+    emb_path = os.path.join(output_dir, "embeddings.npy")
+
+    with open(docs_path, "w", encoding="utf-8") as f_out:
+        for row in docs:
+            f_out.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    np.save(emb_path, np.asarray(embeddings))
+    return docs_path, emb_path
+
+
+def _load_local_artifacts(docs_path, embeddings_path):
+    docs = []
+    with open(docs_path, "r", encoding="utf-8") as f_in:
+        for line in f_in:
+            line = line.strip()
+            if line:
+                docs.append(json.loads(line))
+
+    embeddings = np.load(embeddings_path, allow_pickle=False)
+    return docs, embeddings
+
+
+def _download_artifacts_from_hf(
+    repo_id,
+    *,
+    revision=None,
+    subdir="",
+    repo_type="dataset",
+    token=None,
+):
+    docs_filename = f"{subdir.strip('/') + '/' if subdir else ''}docs.jsonl"
+    emb_filename = f"{subdir.strip('/') + '/' if subdir else ''}embeddings.npy"
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        docs_path = hf_hub_download(
+            repo_id=repo_id,
+            filename=docs_filename,
+            repo_type=repo_type,
+            revision=revision,
+            token=token,
+            local_dir=tmp_dir,
+            local_dir_use_symlinks=False,
+        )
+        emb_path = hf_hub_download(
+            repo_id=repo_id,
+            filename=emb_filename,
+            repo_type=repo_type,
+            revision=revision,
+            token=token,
+            local_dir=tmp_dir,
+            local_dir_use_symlinks=False,
+        )
+        return _load_local_artifacts(docs_path, emb_path)
+
+
 def index_data(
     repo_owner,
     repo_name,
@@ -119,6 +192,11 @@ def index_data(
     chunk=True,
     level=2,
     embedding_model_name: str = "multi-qa-distilbert-cos-v1",
+    artifacts_repo_id: str | None = None,
+    artifacts_revision: str | None = None,
+    artifacts_subdir: str = "",
+    artifacts_repo_type: str = "dataset",
+    hf_token: str | None = None,
 ):
     """
     Download docs, optionally chunk by headings, embed with SentenceTransformers, fit
@@ -128,24 +206,41 @@ def index_data(
 
     Chunk fields are ``content`` and ``filename``. Heading depth is ``level`` (``##`` when ``level`` is 2).
     """
-    docs = read_repo_data(repo_owner, repo_name, folder_filter=folder_filter)
-
-    if doc_filter is not None:
-        docs = [doc for doc in docs if doc_filter(doc)]
-
-    if chunk:
-        docs = chunk_documents(docs, level=level)
-
     embedding_model = SentenceTransformer(embedding_model_name)
-    texts = [d["filename"] + " " + d["content"] for d in docs]
-    embeddings = embedding_model.encode(
-        texts,
-        batch_size=32,
-        show_progress_bar=True,
-        convert_to_numpy=True,
-    )
-    embeddings = np.asarray(embeddings)
+    token = hf_token or os.getenv("HF_TOKEN")
 
-    vindex = VectorSearch()
-    vindex.fit(embeddings, docs)
+    docs = None
+    embeddings = None
+    if artifacts_repo_id:
+        try:
+            docs, embeddings = _download_artifacts_from_hf(
+                artifacts_repo_id,
+                revision=artifacts_revision,
+                subdir=artifacts_subdir,
+                repo_type=artifacts_repo_type,
+                token=token,
+            )
+            print(f"Loaded prebuilt artifacts from HF Hub: {artifacts_repo_id}")
+        except Exception as e:
+            print(f"Could not load HF artifacts ({e}); falling back to local build.")
+
+    if docs is None or embeddings is None:
+        docs = read_repo_data(repo_owner, repo_name, folder_filter=folder_filter)
+
+        if doc_filter is not None:
+            docs = [doc for doc in docs if doc_filter(doc)]
+
+        if chunk:
+            docs = chunk_documents(docs, level=level)
+
+        texts = [d["filename"] + " " + d["content"] for d in docs]
+        embeddings = embedding_model.encode(
+            texts,
+            batch_size=32,
+            show_progress_bar=True,
+            convert_to_numpy=True,
+        )
+        embeddings = np.asarray(embeddings)
+
+    vindex = _fit_vector_index(docs, embeddings)
     return vindex, embedding_model
