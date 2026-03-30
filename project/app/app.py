@@ -29,7 +29,7 @@ st.set_page_config(
     page_icon="🤗",
     layout="centered",
 )
-st.title("🤗 Transformers docs assistant")
+st.title("🤗 Transformers Docs Assistant")
 st.caption("Questions are answered using retrieved sections from huggingface/transformers (English docs).")
 
 if "agent" not in st.session_state:
