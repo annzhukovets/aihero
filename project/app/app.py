@@ -3,18 +3,32 @@ Streamlit UI: Transformers documentation assistant (streaming replies).
 """
 from __future__ import annotations
 
+import concurrent.futures
+import os
+import traceback
+
 import streamlit as st
 
 import ingest
 import logs
 import search_agent
 
+_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+
 
 def init_agent():
+    # Cap the number of chunks we embed so Streamlit startup doesn't time out.
+    # Override with `MAX_CHUNKS=...` if you want a larger index.
+    default_max_chunks = 200
+
+    max_chunks_env = os.getenv("MAX_CHUNKS")
+    max_chunks = int(max_chunks_env) if max_chunks_env else default_max_chunks
+
     vindex, embedding_model = ingest.index_data(
         "huggingface",
         "transformers",
         folder_filter="docs/source/en",
+        max_chunks=max_chunks,
     )
     return search_agent.init_agent(
         vindex,
@@ -33,8 +47,24 @@ st.title("🤗 Transformers Docs Assistant")
 st.caption("Questions are answered using retrieved sections from huggingface/transformers (English docs).")
 
 if "agent" not in st.session_state:
-    with st.spinner("Loading embedding model and indexing docs…"):
-        st.session_state.agent = init_agent()
+    if "init_future" not in st.session_state:
+        st.session_state.init_future = _EXECUTOR.submit(init_agent)
+
+    if st.session_state.init_future.done():
+        try:
+            st.session_state.agent = st.session_state.init_future.result()
+        except Exception as e:
+            st.error("Failed to initialize the agent.")
+            st.text(f"{type(e).__name__}: {e}")
+            st.text(traceback.format_exc())
+            st.stop()
+    else:
+        with st.spinner("Indexing docs (this can take a while)…"):
+            st.write(
+                "The UI stays responsive while the embedding index is built in the background. "
+                "If this takes too long, set `MAX_CHUNKS`."
+            )
+        st.stop()
 
 agent = st.session_state.agent
 
