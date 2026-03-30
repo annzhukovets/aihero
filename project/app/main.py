@@ -23,7 +23,9 @@ def main() -> None:
     import os
 
     # Cap embedded chunks for quicker startup (override with MAX_CHUNKS=...).
-    default_max_chunks = 500
+    default_max_chunks = 100
+    chunk_level = int(os.getenv("CHUNK_LEVEL", "2"))
+    batch_size = int(os.getenv("BATCH_SIZE", "64"))
     max_chunks_env = os.getenv("MAX_CHUNKS")
     max_chunks = int(max_chunks_env) if max_chunks_env else default_max_chunks
 
@@ -32,6 +34,8 @@ def main() -> None:
         "transformers",
         folder_filter="docs/source/en",
         max_chunks=max_chunks,
+        level=chunk_level,
+        batch_size=batch_size,
     )
     print("Vector index ready.")
 

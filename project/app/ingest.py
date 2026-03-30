@@ -120,6 +120,7 @@ def index_data(
     level=2,
     embedding_model_name: str = "multi-qa-distilbert-cos-v1",
     max_chunks: int | None = None,
+    batch_size: int = 32,
 ):
     """
     Download docs, optionally chunk by headings, embed with SentenceTransformers, fit
@@ -143,11 +144,14 @@ def index_data(
             raise ValueError("max_chunks must be > 0 when provided")
         docs = docs[:max_chunks]
 
+    if batch_size <= 0:
+        raise ValueError("batch_size must be > 0")
+
     embedding_model = SentenceTransformer(embedding_model_name)
     texts = [d["filename"] + " " + d["content"] for d in docs]
     embeddings = embedding_model.encode(
         texts,
-        batch_size=32,
+        batch_size=batch_size,
         show_progress_bar=True,
         convert_to_numpy=True,
     )

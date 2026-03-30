@@ -19,16 +19,20 @@ _EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 def init_agent():
     # Cap the number of chunks we embed so Streamlit startup doesn't time out.
     # Override with `MAX_CHUNKS=...` if you want a larger index.
-    default_max_chunks = 200
+    default_max_chunks = 100
 
     max_chunks_env = os.getenv("MAX_CHUNKS")
     max_chunks = int(max_chunks_env) if max_chunks_env else default_max_chunks
+    chunk_level = int(os.getenv("CHUNK_LEVEL", "2"))
+    batch_size = int(os.getenv("BATCH_SIZE", "64"))
 
     vindex, embedding_model = ingest.index_data(
         "huggingface",
         "transformers",
         folder_filter="docs/source/en",
+        level=chunk_level,
         max_chunks=max_chunks,
+        batch_size=batch_size,
     )
     return search_agent.init_agent(
         vindex,
