@@ -31,7 +31,7 @@ def init_agent(vindex, embedding_model, repo_owner, repo_name):
         name="gh_docs_agent",
         instructions=system_prompt,
         tools=[search_tool.search],
-        model="gpt-4o-mini",
+        model="openai:gpt-4o-mini",
     )
 
     return agent

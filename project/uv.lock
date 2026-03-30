@@ -172,6 +172,11 @@ dependencies = [
     { name = "streamlit" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "jupyter" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "minsearch", specifier = ">=0.0.10" },
@@ -181,6 +186,9 @@ requires-dist = [
     { name = "sentence-transformers", specifier = ">=5.3.0" },
     { name = "streamlit", specifier = ">=1.55.0" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "jupyter", specifier = ">=1.1.1" }]
 
 [[package]]
 name = "appnope"
