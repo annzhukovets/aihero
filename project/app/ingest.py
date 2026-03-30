@@ -24,7 +24,7 @@ def read_repo_data(repo_owner, repo_name, folder_filter=None):
     (e.g. only ``docs/source/en`` for huggingface/transformers).
     """
     url = f"https://codeload.github.com/{repo_owner}/{repo_name}/zip/refs/heads/main"
-    resp = requests.get(url, timeout=60)
+    resp = requests.get(url)
 
     if resp.status_code != 200:
         raise Exception(f"Failed to download repository: {resp.status_code}")
@@ -119,8 +119,6 @@ def index_data(
     chunk=True,
     level=2,
     embedding_model_name: str = "multi-qa-distilbert-cos-v1",
-    max_chunks: int | None = None,
-    batch_size: int = 32,
 ):
     """
     Download docs, optionally chunk by headings, embed with SentenceTransformers, fit
@@ -138,20 +136,11 @@ def index_data(
     if chunk:
         docs = chunk_documents(docs, level=level)
 
-    # Cap the number of chunks so Streamlit startup doesn't hang/timeout.
-    if max_chunks is not None:
-        if max_chunks <= 0:
-            raise ValueError("max_chunks must be > 0 when provided")
-        docs = docs[:max_chunks]
-
-    if batch_size <= 0:
-        raise ValueError("batch_size must be > 0")
-
     embedding_model = SentenceTransformer(embedding_model_name)
     texts = [d["filename"] + " " + d["content"] for d in docs]
     embeddings = embedding_model.encode(
         texts,
-        batch_size=batch_size,
+        batch_size=32,
         show_progress_bar=True,
         convert_to_numpy=True,
     )

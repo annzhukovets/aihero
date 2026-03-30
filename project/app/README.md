@@ -76,6 +76,8 @@ Type questions; enter `stop` to exit.
 uv run streamlit run app.py
 ```
 
+<img src="images/streamlit.gif" />
+
 Open the Streamlit app in your browser and chat with the assistant.
 
 ---
