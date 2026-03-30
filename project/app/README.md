@@ -26,7 +26,7 @@ The app is available in two modes:
 Both modes log interactions to JSON for debugging and evaluation.
 
 <a href="https://www.loom.com/share/3cd12f32a9494f9eb307a3ea8465d2b7">
-    <img src="images/demo.png" />
+    <img src="images/demo.png" width="400"/>
 </a>
 
 ---
@@ -70,7 +70,7 @@ export OPENAI_API_KEY="your-key"
 uv run python main.py
 ```
 
-<img src="images/cli.png" />
+<img src="images/cli.png" width="500" />
 
 Type questions; enter `stop` to exit.
 
