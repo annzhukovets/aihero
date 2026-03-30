@@ -169,7 +169,6 @@ def _download_artifacts_from_hf(
             revision=revision,
             token=token,
             local_dir=tmp_dir,
-            local_dir_use_symlinks=False,
         )
         emb_path = hf_hub_download(
             repo_id=repo_id,
@@ -178,7 +177,6 @@ def _download_artifacts_from_hf(
             revision=revision,
             token=token,
             local_dir=tmp_dir,
-            local_dir_use_symlinks=False,
         )
         return _load_local_artifacts(docs_path, emb_path)
 

@@ -25,6 +25,10 @@ The app is available in two modes:
 
 Both modes log interactions to JSON for debugging and evaluation.
 
+<a href="https://www.loom.com/share/3cd12f32a9494f9eb307a3ea8465d2b7">
+    <img src="images/demo.png" />
+</a>
+
 ---
 
 ## Installation
